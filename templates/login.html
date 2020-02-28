@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+    {% if error %}
+        <header>
+            <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                <p class=error><i>{{ error }}</i></p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </header>
+    {% endif %}
+    <form action="/login" method="post" class="form-signin needs-validation" novalidate>
+      <img class="mb-4" src="static/terminal.svg" alt="" width="72" height="72">
+      <h1 class="h3 mb-3 font-weight-normal">Sign in to Kodex</h1>
+      <div class="form-group">
+          <label for="username" class="sr-only">Username</label>
+          <input id="username" autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" required type="text">
+          <small class="valid-feedback form-text text-left">Looks good.</small>
+          <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+      </div>
+      <div class="form-group">
+          <label for="password" class="sr-only">Password</label>
+          <input id="password" class="form-control" name="password" placeholder="Password" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters." required>
+          <small class="valid-feedback form-text text-left">Looks good.</small>
+          <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+      </div>
+      <div class="custom-control custom-checkbox mb-3">
+          <input type="checkbox" class="custom-control-input" id="customCheck" value="remember-me">
+          <label class="custom-control-label" for="customCheck">Remember Me</label>
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <p class="mt-5 mb-3 text-muted">&copy; 2019-2020</p>
+    </form>
+{% endblock %}
