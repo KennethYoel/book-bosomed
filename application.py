@@ -33,10 +33,18 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-@app.route("/", methods=["GET", "POST"])
-def register():
+@app.route("/", methods=["GET"])
+def index():
     """Index page where users register"""
 
+    # Render the main page-index
+    return render_template("index.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """"Registration page"""
+    
     # Forget any user_id
     session.clear()
 
@@ -73,11 +81,11 @@ def register():
 
     # User reached route via GET
     else:
-        return render_template("index.html")
+        return render_template("register.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
-def index():
+def login():
     """Log user in"""
 
     # Forget any user_id

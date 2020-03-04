@@ -4,43 +4,45 @@
     Log In
 {% endblock %}
 
-{% block main %}
-    {% if error %}
-        <header>
-            <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
-                <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+{% block content %}
+    <main role="main" class="container" style="margin-top:3%;">
+        {% if error %}
+            <header>
+                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                    <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </header>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-4 mx-auto">
+                <form action="{{ url_for('login') }}" method="post" class="form-signin p-4 border rounded needs-validation" novalidate>
+                <img class="mb-4 rounded mx-auto d-block" src="static/terminal.svg" alt="" width="72" height="72">
+                <h1 class="h5 mb-3 font-weight-normal text-center">Sign in to Book-Bosomed</h1>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input id="username" autocomplete="off" autofocus class="form-control" name="username" placeholder="" required type="text">
+                    <small class="valid-feedback form-text text-left">Looks good.</small>
+                    <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input id="password" class="form-control" name="password" placeholder="" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
+                    <small class="valid-feedback form-text text-left">Looks good.</small>
+                    <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+                </div>
+                <div class="custom-control custom-checkbox mb-3">
+                    <input type="checkbox" class="custom-control-input" id="customCheck" value="remember-me">
+                    <label class="custom-control-label" for="customCheck">Remember Me</label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <div class="mt-4 mb-4 py-2 text-center border rounded">
+                    <small class="pt-2">First time at Book-Bosomed? <a href="/register">Create an account.</a></small>
+                </div>
+                </form>
             </div>
-        </header>
-    {% endif %}
-    <div class="row text-center">
-        <div class="col-md-4 mx-auto">
-            <form action="/login" method="post" class="form-signin p-4 border rounded needs-validation" novalidate>
-            <img class="mb-4" src="static/terminal.svg" alt="" width="72" height="72">
-            <h1 class="h3 mb-3 font-weight-normal">Sign in to Book-Bosomed</h1>
-            <div class="form-group">
-                <label for="username" class="sr-only">Username</label>
-                <input id="username" autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" required type="text">
-                <small class="valid-feedback form-text text-left">Looks good.</small>
-                <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
-            </div>
-            <div class="form-group">
-                <label for="password" class="sr-only">Password</label>
-                <input id="password" class="form-control" name="password" placeholder="Password" type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required>
-                <small class="valid-feedback form-text text-left">Looks good.</small>
-                <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
-            </div>
-            <div class="custom-control custom-checkbox mb-3">
-                <input type="checkbox" class="custom-control-input" id="customCheck" value="remember-me">
-                <label class="custom-control-label" for="customCheck">Remember Me</label>
-            </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-            <div class="mt-4 mb-4 py-2 border rounded">
-                <small class="pt-2">First time at Book-Bosomed? <a href="/register">Create an account.</a></small>
-            </div>
-            </form>
         </div>
-    </div>
+    </main>
 {% endblock %}

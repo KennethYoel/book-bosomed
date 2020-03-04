@@ -1,33 +1,11 @@
 {% extends "layout.html" %} 
 
 {% block title %} 
-    Hello 
+    Register 
 {% endblock %} 
 
-{% block header %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 fixed-top shadow">
-        <a class="navbar-brand" href="#">Book-Bosomed</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarToggler">
-        <ul class="navbar-nav ml-auto px-4">
-            <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('login') }}">Sign in</a>
-            </li>
-            <li class="nav-item border rounded">
-            <a class="nav-link" href="{{ url_for('register') }}">Sign up</a>
-            </li>
-        </ul>
-        </div>
-    </nav>
-{% endblock %}
-
 {% block content %}
-    <main role="main" class="container">
+    <main role="main" class="container" style="margin-top:3%;>
         {% if error %}
             <header>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -39,14 +17,9 @@
             </header>
         {% endif %}
         <div class="row">
-            <div class="col-md-6 my-auto text-white">
-                <h1>Made for bibliophile</h1>
-                <p class="body-text">Book-Bosomed is a book review website. Users will be able to register on this website and
-                then log in using their username and password. Once logged in, you will be able to search for
-                books, leave reviews for individual books, and see the reviews made by other people.</p>
-            </div>
-            <div class="col-md-6">
+            <div class="col-md-6 mx-auto">
                 <form action="{{ url_for('register') }}" method="post" class="form-signup p-4 border rounded needs-validation" novalidate>
+                    <h1 class="h3 mb-3 font-weight-normal text-center">Join Book-Bosomed</h1>
                     <div class="form-group">
                         <label for="username">Username<span style="color:red;">&#42</span></label>
                         <input type="text" autocomplete="off" autofocus class="form-control" name="username" id="username" placeholder="" required>
