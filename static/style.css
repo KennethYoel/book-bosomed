@@ -42,7 +42,8 @@ h1 {
 }
 
 main {
-  margin-top: 8%;
+  margin-top: 7%;
+  margin-bottom: 5%;
 }
 
 @media screen and (max-width: 480px) {

@@ -119,7 +119,7 @@ def login():
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
-        return redirect("/home")
+        return redirect("/search")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -137,8 +137,8 @@ def logout():
     return redirect("/")
 
 
-@app.route("/home", methods=["GET", "POST"])
-def home():
+@app.route("/search", methods=["GET", "POST"])
+def search():
     """Home page for book review site"""
     
-    return render_template("home.html")
+    return render_template("search.html")

@@ -1,0 +1,82 @@
+{% extends "layout.html" %} 
+
+{% block title %} 
+    Search Results 
+{% endblock %} 
+
+{% block header %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 fixed-top shadow">
+        <a class="navbar-brand" href="#">Book-Bosomed</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+        <ul class="navbar-nav ml-auto px-4">
+            <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('login') }}">Sign in</a>
+            </li>
+            <li class="nav-item border rounded">
+            <a class="nav-link" href="{{ url_for('register') }}">Sign up</a>
+            </li>
+        </ul>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <main role="main" class="container">
+      <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-beluga rounded shadow-sm">
+        <span data-feather="coffee" style="width:60px;height:60px;color:white;"></span>
+        <div class="lh-100 ml-2">
+          <h6 class="mb-0 text-white lh-100">Brewing Kode</h6>
+          <small>Since 1977</small>
+        </div>
+      </div>
+
+      <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <div class="border-bottom pb-2 mb-0">
+          <label class="sr-only">Search for Books</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><span data-feather="search"></span></span>
+            </div>
+            <input type="text" class="form-control" onkeyup="myFunction()" placeholder="Search for books..." />
+          </div>
+        </div>
+        {% for items in book_list %}
+          <div class="media text-muted pt-3 border-bottom border-gray">
+            <form id="search" action="{{ url_for('search') }}" method="post">
+              <p class="media-body pb-3 mb-0 small lh-125">
+                <input type="hidden" name="book_id" value="{{ items.id }}" />
+                <a href="#" onclick="document.getElementById('search').submit();"><strong class="d-block">{{ items.name|e }}</strong></a>
+                #{{ items.id|e }} reviewed by {{ items.users_id|e }}
+              </p>
+            </form>
+          </div>
+        {% endfor %}
+        <small class="d-block text-right mt-3">
+          <a href="#">Back to top</a>
+        </small>
+      </div>
+
+      <div class="my-3 p-3 bg-white rounded shadow-sm">
+        <h6 class="border-bottom pb-2 mb-0">Fellow Bibliophile</h6>
+        <div class="media text-muted pt-3">
+          <!-- include icons/placeholder.svg width="32" height="32" background="#007bff" color="#007bff" class="mr-2 rounded" -->
+          <div class="media-body pb-3 mb-0 small lh-125 border-bottom">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <strong class="text-gray-dark">Full Name</strong>
+              <a href="#">Follow</a>
+            </div>
+            <span class="d-block">@username</span>
+          </div>
+        </div>
+        <small class="d-block text-right mt-3">
+          <a href="#">All suggestions</a>
+        </small>
+      </div>
+    </main>
+{% endblock %}
