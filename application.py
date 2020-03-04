@@ -58,7 +58,7 @@ def register():
             return render_template("index.html", error=error)
 
         # Check if username already exist
-        if db.execute("SELECT * FROM customer WHERE username = :username", {"username" : request.form.get("username")}).rowcount == 0:
+        if db.execute("SELECT * FROM customer WHERE username = :username", {"username" : request.form.get("username")}).rowcount == 1:
              error = 'User Name Already Exists!'
              return render_template("index.html", error=error)
 
@@ -77,7 +77,7 @@ def register():
 
 
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def index():
     """Log user in"""
 
     # Forget any user_id

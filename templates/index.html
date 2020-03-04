@@ -1,14 +1,36 @@
 {% extends "layout.html" %} 
 
 {% block title %} 
-    Register 
+    Hello 
 {% endblock %} 
+
+{% block nav %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 fixed-top shadow">
+        <a class="navbar-brand" href="#">Book-Bosomed</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+        <ul class="navbar-nav ml-auto px-4">
+            <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('/login') }}">Sign in</a>
+            </li>
+            <li class="nav-item border rounded">
+            <a class="nav-link" href="#">Sign up</a>
+            </li>
+        </ul>
+        </div>
+    </nav>
+{% endblock %}
 
 {% block main %}
     {% if error %}
         <header>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <p class=error><i>{{ error }}</i></p>
+                <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

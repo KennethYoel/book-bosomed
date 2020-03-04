@@ -50,19 +50,21 @@ main {
 /*
  * Forms
  */
-.form-signup {
+.form-signup,
+.form-signin {
   width: 100%;
   max-width: 430px;
   padding: 15px;
   margin: auto;
   background-color: #f9f9f9;
 }
-.form-signup {
+.form-signin {
   .checkbox {
     font-weight: 400;
   }
 }
-.form-signup {
+.form-signup,
+.form-signin {
   .form-control {
     position: relative;
     box-sizing: border-box;
@@ -71,7 +73,8 @@ main {
     font-size: 16px;
   }
 }
-.form-signup {
+.form-signup,
+.form-signin {
   .form-control:focus {
     z-index: 2;
   }
@@ -83,7 +86,8 @@ main {
     border-bottom-left-radius: 0;
   }
 }
-.form-signup {
+.form-signup,
+.form-signin {
   input[type='password'] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
