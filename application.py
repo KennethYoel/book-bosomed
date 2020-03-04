@@ -34,8 +34,8 @@ db = scoped_session(sessionmaker(bind=engine))
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    """Main page and register users"""
+def register():
+    """Index page where users register"""
 
     # Forget any user_id
     session.clear()
@@ -57,12 +57,9 @@ def index():
             error = 'Please fill out password field.'
             return render_template("index.html", error=error)
 
-        # Query database for username
-        rows = db.execute("SELECT * FROM customer WHERE username = :username", {"username" : request.form.get("username")}).fetchone
-
-        # Check if unique username constrained violated
-        if rows == 1:
-             error = 'User Name Already Exists!' # return apology("Username Already Exist", 400)
+        # Check if username already exist
+        if db.execute("SELECT * FROM customer WHERE username = :username", {"username" : request.form.get("username")}).rowcount == 0:
+             error = 'User Name Already Exists!'
              return render_template("index.html", error=error)
 
         # Insert username and password(as a hash) into table users
