@@ -39,12 +39,12 @@ h1 {
   font-size: 3.5rem;
 }
 main {
-  margin-top: 7%;
-  margin-bottom: 5%;
+  margin-top: 5%;
+  margin-bottom: 7%;
 }
-@media screen and (max-width: 480px) {
-  main {
-    margin-top: 15%;
+main {
+  .container {
+    padding: 60px 15px 0;
   }
 }
 
@@ -112,13 +112,18 @@ main {
 /*
  * Footer
  */
-.page-footer {
-  padding: 1.8rem 0;
+.footer {
   color: #999;
   text-align: center;
   background-color: #f9f9f9;
   border-top: 0.05rem solid #e5e5e5;
   p:last-child {
     margin-bottom: 0;
+  }
+}
+.footer {
+  .container {
+    padding-right: 1.8rem;
+    padding-left: 1.8rem;
   }
 }

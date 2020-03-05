@@ -5,41 +5,43 @@
 {% endblock %} 
 
 {% block content %}
-    <main role="main" class="container" style="margin-top:3%;>
-        {% if error %}
-            <header>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <main role="main" class="flex-shrink-0 mt-1">
+        <div class="container">
+            {% if error %}
+                <header>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </header>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <form action="{{ url_for('register') }}" method="post" class="form-signup p-4 border rounded needs-validation" novalidate>
+                        <h1 class="h3 mb-3 font-weight-normal text-center">Join Book-Bosomed</h1>
+                        <div class="form-group">
+                            <label for="username">Username<span style="color:red;">&#42</span></label>
+                            <input type="text" autocomplete="off" autofocus class="form-control" name="username" id="username" placeholder="" required>
+                            <small class="valid-feedback form-text text-left">Looks good.</small>
+                            <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" autofocus class="form-control" name="email" id="email" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password<span style="color:red;">&#42</span></label>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters." required>
+                            <small class="valid-feedback form-text text-left">Looks good.</small>
+                            <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
+                            <small class="form-text text-left">Make sure it's&#32;<span id="length" class="invalid">at least 8 characters&#32;</span><span>including&#32;</span><span id="number" class="invalid">a number,&#32;</span><span id="capital" class="invalid">uppercase letter&#32;</span><span>and&#32;</span><span id="letter" class="invalid">a lowercase letter.&#32;</span></small>
+                        </div>
+                        <button class="btn btn-md btn-primary btn-block mt-4 mb-4" type="submit">Sign up for Book-Bosomed</button>
+                        <small class="text-muted">By clicking "Sign up for Book-Bosomed, you agree to our...blah, blah. We'll not send you account related emails because this site is for practice only.</small>
+                    </form>
                 </div>
-            </header>
-        {% endif %}
-        <div class="row">
-            <div class="col-md-6 mx-auto">
-                <form action="{{ url_for('register') }}" method="post" class="form-signup p-4 border rounded needs-validation" novalidate>
-                    <h1 class="h3 mb-3 font-weight-normal text-center">Join Book-Bosomed</h1>
-                    <div class="form-group">
-                        <label for="username">Username<span style="color:red;">&#42</span></label>
-                        <input type="text" autocomplete="off" autofocus class="form-control" name="username" id="username" placeholder="" required>
-                        <small class="valid-feedback form-text text-left">Looks good.</small>
-                        <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" autofocus class="form-control" name="email" id="email" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password<span style="color:red;">&#42</span></label>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters." required>
-                        <small class="valid-feedback form-text text-left">Looks good.</small>
-                        <small class="invalid-feedback form-text text-left">Please fill out this field.</small>
-                        <small class="form-text text-left">Make sure it's&#32;<span id="length" class="invalid">at least 8 characters&#32;</span><span>including&#32;</span><span id="number" class="invalid">a number,&#32;</span><span id="capital" class="invalid">uppercase letter&#32;</span><span>and&#32;</span><span id="letter" class="invalid">a lowercase letter.&#32;</span></small>
-                    </div>
-                    <button class="btn btn-md btn-primary btn-block mt-4 mb-4" type="submit">Sign up for Book-Bosomed</button>
-                    <small class="text-muted">By clicking "Sign up for Book-Bosomed, you agree to our...blah, blah. We'll not send you account related emails because this site is for practice only.</small>
-                </form>
             </div>
         </div>
     </main>
