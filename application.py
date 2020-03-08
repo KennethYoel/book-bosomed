@@ -91,7 +91,7 @@ def login():
     # Forget any user_id
     session.clear()
     
-    user_name = (request.form.get("username"),)
+    user_name = request.form.get("username")
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
@@ -141,4 +141,18 @@ def logout():
 def search():
     """Home page for book review site"""
     
-    return render_template("search.html")
+    if 'user_id' in session:
+        # Query for requested book in the database
+        results = request.form.get("search-books")
+        search_books = '%'+results+'%'
+        book_list = db.execute("SELECT * FROM book WHERE title LIKE :title", {"title" : search_books}).fetchall()
+                
+        return render_template("search.html", book_list=book_list)
+    else:
+        return render_template("login.html")
+    
+@app.route("/book", methods=["POST"])
+def book():
+    """Book Page"""
+    
+    return render_template("book.html")

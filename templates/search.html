@@ -1,7 +1,7 @@
 {% extends "layout.html" %} 
 
 {% block title %} 
-    Book-Bosomed Search 
+    Search für Books 
 {% endblock %} 
 
 {% block head %} 
@@ -22,10 +22,7 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav ml-auto px-4">
             <li class="nav-item active">
-            <a class="nav-link" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
+            <a class="nav-link" href="{{ url_for('logout') }}">Sign out <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('register') }}"><span class="border rounded p-2">Sign up</span></a>
@@ -36,7 +33,7 @@
 {% endblock %}
 
 {% block content %}
-    <main role="main" class="flex-shrink-0 col-md-5 mx-auto h-100">
+    <main role="main" class="flex-shrink-0 col-lg-5 mx-auto h-100">
       <div class="container">
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-beluga rounded shadow-sm">
           <span data-feather="coffee" style="width:60px; height:60px; color:white;"></span>
@@ -47,22 +44,22 @@
         </div>
 
         <div class="my-2 p-3 bg-white rounded shadow-sm">
-          <div class="border-bottom pb-2 mb-0">
+          <form action="{{ url_for('search') }}" method="post" class="border-bottom pb-2 mb-0">
             <label class="sr-only">Search for Books</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text"><span data-feather="search"></span></span>
+            <div class="input-group mb-3">
+              <input id="search-books" type="text" name="search-books" class="form-control" placeholder="Search for books..." aria-label="Search for books" aria-describedby="search-button" required />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit" id="search-button">Search</button>
               </div>
-              <input type="text" class="form-control" onkeyup="myFunction()" placeholder="Search for books..." />
             </div>
-          </div>
+          </form>
           {% for items in book_list %}
             <div class="media text-muted pt-3 border-bottom border-gray">
-              <form id="search" action="{{ url_for('search') }}" method="post">
+              <form id="reading-list" action="{{ url_for('book') }}" method="post">
                 <p class="media-body pb-3 mb-0 small lh-125">
                   <input type="hidden" name="book_id" value="{{ items.id }}" />
-                  <a href="#" onclick="document.getElementById('search').submit();"><strong class="d-block">{{ items.name|e }}</strong></a>
-                  #{{ items.id|e }} reviewed by {{ items.users_id|e }}
+                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block">{{ items.title|e }}</strong></a>
+                  {{ items.author|e }} ISBN : {{ items.isbn|e }}
                 </p>
               </form>
             </div>
