@@ -1,7 +1,16 @@
 {% extends "layout.html" %} 
 
 {% block title %} 
-    Register 
+    Book-Bosomed Register 
+{% endblock %} 
+
+{% block head %} 
+    {{ super() }}
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+    </style> 
 {% endblock %} 
 
 {% block content %}
@@ -19,7 +28,7 @@
             {% endif %}
             <div class="row">
                 <div class="col-md-6 mx-auto">
-                    <form action="{{ url_for('register') }}" method="post" class="form-signup p-4 border rounded needs-validation" novalidate>
+                    <form action="{{ url_for('register') }}" method="post" class="form-signup p-4 mb-4 border rounded needs-validation" novalidate>
                         <h1 class="h3 mb-3 font-weight-normal text-center">Join Book-Bosomed</h1>
                         <div class="form-group">
                             <label for="username">Username<span style="color:red;">&#42</span></label>

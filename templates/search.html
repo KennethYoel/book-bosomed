@@ -1,8 +1,17 @@
 {% extends "layout.html" %} 
 
 {% block title %} 
-    Search Results 
+    Book-Bosomed Search 
 {% endblock %} 
+
+{% block head %} 
+    {{ super() }}
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+    </style> 
+{% endblock %}
 
 {% block header %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 fixed-top shadow">
@@ -30,9 +39,9 @@
     <main role="main" class="flex-shrink-0 col-md-5 mx-auto h-100">
       <div class="container">
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-beluga rounded shadow-sm">
-          <span data-feather="coffee" style="width:60px;height:60px;color:white;"></span>
+          <span data-feather="coffee" style="width:60px; height:60px; color:white;"></span>
           <div class="lh-100 ml-2">
-            <h6 class="mb-0 text-white lh-100">Brewing Kode</h6>
+            <h6 class="mb-0 text-white lh-100">Reading Room_</h6>
             <small>Since 1977</small>
           </div>
         </div>

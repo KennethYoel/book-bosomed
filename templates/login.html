@@ -1,8 +1,17 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Log In
-{% endblock %}
+{% block title %} 
+    Book-Bosomed Signin 
+{% endblock %} 
+
+{% block head %} 
+    {{ super() }}
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+    </style> 
+{% endblock %} 
 
 {% block content %}
     <main role="main" class="flex-shrink-0 mt-1">
@@ -19,7 +28,7 @@
             {% endif %}
             <div class="row">
                 <div class="col-md-4 mx-auto">
-                    <form action="{{ url_for('login') }}" method="post" class="form-signin p-4 border rounded needs-validation" novalidate>
+                    <form action="{{ url_for('login') }}" method="post" class="form-signin p-4 mb-4 border rounded needs-validation" novalidate>
                     <img class="mb-4 rounded mx-auto d-block" src="static/terminal.svg" alt="" width="72" height="72">
                     <h1 class="h5 mb-3 font-weight-normal text-center">Sign in to Book-Bosomed</h1>
                     <div class="form-group">
