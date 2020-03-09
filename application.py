@@ -141,13 +141,26 @@ def logout():
 def search():
     """Home page for book review site"""
     
+    # Query for requested book in the database
     if 'user_id' in session:
-        # Query for requested book in the database
-        results = request.form.get("search-books")
-        search_books = '%'+results+'%'
-        book_list = db.execute("SELECT * FROM book WHERE title LIKE :title", {"title" : search_books}).fetchall()
-                
-        return render_template("search.html", book_list=book_list)
+        if request.method == "GET":
+            return render_template("search.html")
+        else:
+            # Get form information.
+            requested = request.form.get("search-books")
+            search_book = '%'+requested+'%'
+            
+            # Ensure a request was submitted
+            if not requested:
+                return render_template("search.html", nonsuch='Please enter either ISBN or title or author to be serached.')
+            
+            # Make sure the requested book exist
+            if db.execute("SELECT * FROM book WHERE title ILIKE :title", {"title" : search_book}).rowcount == 0:
+                return render_template("search.html", nonsuch='The Requested Book Is Not On My List')
+            else:
+                book_list = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book}).fetchall()
+                    
+            return render_template("search.html", book_list=book_list)
     else:
         return render_template("login.html")
     

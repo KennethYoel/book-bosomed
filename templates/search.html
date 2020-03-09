@@ -39,7 +39,7 @@
           <span data-feather="coffee" style="width:60px; height:60px; color:white;"></span>
           <div class="lh-100 ml-2">
             <h6 class="mb-0 text-white lh-100">Reading Room_</h6>
-            <small>Since 1977</small>
+            <small>Est. 1977</small>
           </div>
         </div>
 
@@ -47,22 +47,32 @@
           <form action="{{ url_for('search') }}" method="post" class="border-bottom pb-2 mb-0">
             <label class="sr-only">Search for Books</label>
             <div class="input-group mb-3">
-              <input id="search-books" type="text" name="search-books" class="form-control" placeholder="Search for books..." aria-label="Search for books" aria-describedby="search-button" required />
+              <input id="search-books" type="text" name="search-books" autofocus class="form-control" placeholder="Search for books..." aria-label="Search for books" aria-describedby="search-button" required />
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit" id="search-button">Search</button>
               </div>
             </div>
           </form>
-          {% for items in book_list %}
+          {% for items in book_list %} <!-- Here I have converted a link into submit button and added the book id to the input value -->
             <div class="media text-muted pt-3 border-bottom border-gray">
               <form id="reading-list" action="{{ url_for('book') }}" method="post">
                 <p class="media-body pb-3 mb-0 small lh-125">
                   <input type="hidden" name="book_id" value="{{ items.id }}" />
-                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> by {{ items.author|e }} publish {{ items.year|e }} ISBN : {{ items.isbn|e }}
+                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> by {{ items.author|e }} | published {{ items.year|e }} | ISBN:{{ items.isbn|e }}
                 </p>
               </form>
             </div>
           {% endfor %}
+          {% if nonsuch %}
+            <header>
+                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                    <p class="text-center font-weight-bold my-auto"><i>{{ nonsuch }}</i></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </header>
+          {% endif %}
           <small class="d-block text-right mt-3">
             <a href="#">Back to top</a>
           </small>
