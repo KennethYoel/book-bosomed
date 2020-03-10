@@ -47,7 +47,7 @@
           <form action="{{ url_for('search') }}" method="post" class="border-bottom pb-2 mb-0">
             <label class="sr-only">Search for Books</label>
             <div class="input-group mb-3">
-              <input id="search-books" type="text" name="search-books" autofocus class="form-control" placeholder="Search for books..." aria-label="Search for books" aria-describedby="search-button" required />
+              <input id="search-books" type="text" name="search-books" autofocus class="form-control" placeholder="Search for books..." title="Please enter ISBN, title or author to be searched." aria-label="Search for books" aria-describedby="search-button" required />
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit" id="search-button">Search</button>
               </div>
@@ -58,7 +58,7 @@
               <form id="reading-list" action="{{ url_for('book') }}" method="post">
                 <p class="media-body pb-3 mb-0 small lh-125">
                   <input type="hidden" name="book_id" value="{{ items.id }}" />
-                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> by {{ items.author|e }} | published {{ items.year|e }} | ISBN:{{ items.isbn|e }}
+                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block pb-1">{{ items.title|e }}</strong></a> by {{ items.author|e }} | rating | average rating | published {{ items.year|e }} | ISBN:{{ items.isbn|e }}
                 </p>
               </form>
             </div>

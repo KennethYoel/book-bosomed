@@ -152,11 +152,11 @@ def search():
             
             # Ensure a request was submitted
             if not requested:
-                return render_template("search.html", nonsuch='Please enter either ISBN or title or author to be serached.')
+                return render_template("search.html", nonsuch='Please enter ISBN, title or author to be searched.')
             
             # Make sure the requested book exist
             if db.execute("SELECT * FROM book WHERE title ILIKE :title", {"title" : search_book}).rowcount == 0:
-                return render_template("search.html", nonsuch='The Requested Book Is Not On My List')
+                return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
             else:
                 book_list = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book}).fetchall()
                     
