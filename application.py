@@ -163,9 +163,11 @@ def search():
                 book_list = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book}).fetchall()
                 
             # Getting Goodreads API information
-            data = goodreads_review("1442468351")
-                    
-            return render_template("search.html", book_list=book_list, ratings=comma(data["rate_count"]), average_ratings=data["rate_average"])
+            for i in range(len(book_list)):
+                isbns = str(book_list[i]["isbn"])
+                ratings_data = goodreads_review("0596009208")
+            
+            return render_template("search.html", book_list=book_list, ratings=comma(ratings_data["rate_count"]), average_ratings=isbns)
     else:
         return render_template("login.html")
     

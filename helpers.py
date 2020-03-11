@@ -30,6 +30,7 @@ def goodreads_review(isbn):
     try:
         data = response.json()
         return {
+            "isbns": data["books"][0]["isbn"],
             "rate_count": data["books"][0]["ratings_count"],
             "rate_average": data["books"][0]["average_rating"]
         }
