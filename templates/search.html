@@ -58,7 +58,7 @@
               <form id="reading-list" action="{{ url_for('book') }}" method="post">
                 <p class="media-body pb-3 mb-0 small lh-125">
                   <input type="hidden" name="book_id" value="{{ items.id }}" />
-                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block pb-1">{{ items.title|e }}</strong></a> by {{ items.author|e }} | rating | average rating | published {{ items.year|e }} | ISBN:{{ items.isbn|e }}
+                  <a href="#" onclick="document.getElementById('reading-list').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> <span class="d-block pb-1">by {{ items.author|e }}</span> | from good<strong>reads</strong> {{ ratings|e }} ratings - {{ average_ratings|e }} avg rating | published {{ items.year|e }} | ISBN:{{ items.isbn|e }}
                 </p>
               </form>
             </div>

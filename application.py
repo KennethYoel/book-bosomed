@@ -17,6 +17,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+from helpers import goodreads_review, comma
+
 app = Flask(__name__)
 
 # Check for environment variable
@@ -159,8 +161,11 @@ def search():
                 return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
             else:
                 book_list = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book}).fetchall()
+                
+            # Getting Goodreads API information
+            data = goodreads_review("1442468351")
                     
-            return render_template("search.html", book_list=book_list)
+            return render_template("search.html", book_list=book_list, ratings=comma(data["rate_count"]), average_ratings=data["rate_average"])
     else:
         return render_template("login.html")
     
@@ -168,4 +173,7 @@ def search():
 def book():
     """Book Page"""
     
-    return render_template("book.html")
+    if 'user_id' in session:
+        return render_template("book.html")
+    else:
+        return render_template("login.html")
