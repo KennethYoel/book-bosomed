@@ -110,15 +110,15 @@ def login():
             return render_template("login.html", error=error)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM customer WHERE username = :username", {"username" : user_name}).fetchall()
+        customer_rows = db.execute("SELECT * FROM customer WHERE username = :username", {"username" : user_name}).fetchall()
     
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["password_hash"], request.form.get("password")):
+        if len(customer_rows) != 1 or not check_password_hash(customer_rows[0]["password_hash"], request.form.get("password")):
             error = 'Invalid Username and/or Password'
             return render_template("login.html", error=error)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = customer_rows[0]["id"]
 
         # Redirect user to home page
         return redirect("/search")
@@ -157,17 +157,13 @@ def search():
                 return render_template("search.html", nonsuch='Please enter ISBN, title or author to be searched.')
             
             # Make sure the requested book exist
-            if db.execute("SELECT * FROM book WHERE title ILIKE :title", {"title" : search_book}).rowcount == 0:
+            book_rows = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book})
+            if book_rows.rowcount == 0:
                 return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
             else:
-                book_list = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book}).fetchall()
-                
-            # Getting Goodreads API information
-            for i in range(len(book_list)):
-                isbns = str(book_list[i]["isbn"])
-                ratings_data = goodreads_review("0596009208")
+                book_list = book_rows.fetchall()
             
-            return render_template("search.html", book_list=book_list, ratings=comma(ratings_data["rate_count"]), average_ratings=isbns)
+            return render_template("search.html", book_list=book_list)
     else:
         return render_template("login.html")
     
@@ -176,6 +172,21 @@ def book():
     """Book Page"""
     
     if 'user_id' in session:
-        return render_template("book.html")
+        # Posted form information.
+        requested = request.form.get("book-id")
+        
+        # Book information
+        the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : requested}).fetchall()
+        
+        # Getting Goodreads API information
+        rating_results = goodreads_review(the_book[0]["isbn"])
+        if rating_results == None:
+            total_ratings = 0
+            average_ratings = 0.0
+        else:
+            total_ratings = comma(rating_results["rate_count"])
+            average_ratings = rating_results["rate_average"]
+            
+        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings)
     else:
         return render_template("login.html")

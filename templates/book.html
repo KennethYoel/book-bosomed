@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 
+{% block head %} 
+    {{ super() }} 
+{% endblock %} 
+
 {% block title %}
     Home
 {% endblock %}
@@ -28,6 +32,20 @@
 
 {% block content %}
     <main role="main" class="container">
-        <iframe src="https://www.goodreads.com/book/isbn/0441172717?format=xml&key=GZZX52IAd0zxYaYnZOsw"></iframe>
+        <div class="row">
+            <div class="col-md-6 my-auto text-white">
+                <ul>
+                    <li><strong>{{ the_title|e }}</strong></li>
+                    <li>Total Rating {{ total_ratings|e }}</li>
+                    <li>Avg Rating {{ average_ratings|e }}</li>
+                    <li>by {{ the_author|e }}</li>
+                    <li>published {{ the_year|e }}</li>
+                    <li>ISBN:{{ the_isbn|e }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <iframe src="https://www.goodreads.com/book/isbn/0441172717?format=xml&key=GZZX52IAd0zxYaYnZOsw"></iframe>
+            </div>
+        </div>
     </main>
 {% endblock %}

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar  3 17:58:10 2020
+Created on Fri Mar 13 04:50:50 2020
 
 @author: KennethJoel
 """
@@ -34,13 +34,11 @@ try:
 except csv.Error:
     print("Unable to open the file.")
 
-db.execute("CREATE TABLE IF NOT EXISTS book (id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INT NOT NULL)")
-
 for isbn, title, author, year in islice(reader, 1, None): # loop gives each column a name and islice skip the first item(s).
     while len(isbn) < 10:
         isbn = "0" + isbn
     else:
-        db.execute("INSERT INTO book (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)", {"isbn" : isbn, "title" : title, "author" : author, "year" : int(year)})
-        #print(f"Added into book db ISBN: {isbn} Title: {title} Author: {author} Year: {year}")
+        db.execute("UPDATE book SET isbn = :isbn WHERE title = :title AND author = :author", {"isbn" : isbn, "title" : title, "author" : author})
+        print(f"Updated isbn book db to ISBN: {isbn}")
     
 db.commit() #transactions are assumed, so close the transaction finished
