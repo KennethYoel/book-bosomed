@@ -161,31 +161,40 @@ def search():
             if book_rows.rowcount == 0:
                 return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
             else:
-                book_list = book_rows.fetchall()
-            
+                temp_list = book_rows.fetchall()
+                ratings = goodreads_review(temp_list[0]["isbn"])
+                book_list = [(dict(id=244, isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))]
+                
+                for i in range(1, len(temp_list)):
+                    ratings = goodreads_review(temp_list[i]["isbn"])
+                    book_list.append(dict(id=244, isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))
+                    
             return render_template("search.html", book_list=book_list)
     else:
         return render_template("login.html")
     
-@app.route("/book", methods=["POST"])
+@app.route("/book", methods=["GET", "POST"])
 def book():
     """Book Page"""
     
     if 'user_id' in session:
-        # Posted form information.
-        requested = request.form.get("book-id")
-        
-        # Book information
-        the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : requested}).fetchall()
-        
-        # Getting Goodreads API information
-        rating_results = goodreads_review(the_book[0]["isbn"])
-        if rating_results == None:
-            total_ratings = 0
-            average_ratings = 0.0
+        if request.method == "POST":
+            # Posted form information.
+            requested_id = request.form.get("book-id")
+            
+            # Book information
+            the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : requested_id}).fetchall()
+            
+            # Getting Goodreads API information
+            rating_results = goodreads_review(the_book[0]["isbn"])
+            if rating_results == None:
+                total_ratings = 0
+                average_ratings = 0.0
+            else:
+                total_ratings = comma(rating_results["rate_count"])
+                average_ratings = rating_results["rate_average"]
         else:
-            total_ratings = comma(rating_results["rate_count"])
-            average_ratings = rating_results["rate_average"]
+            redirect("/search")
             
         return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings)
     else:
