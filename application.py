@@ -163,11 +163,11 @@ def search():
             else:
                 temp_list = book_rows.fetchall()
                 ratings = goodreads_review(temp_list[0]["isbn"])
-                book_list = [(dict(id=244, isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))]
+                book_list = [(dict(id=temp_list[0]["id"], isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))]
                 
                 for i in range(1, len(temp_list)):
                     ratings = goodreads_review(temp_list[i]["isbn"])
-                    book_list.append(dict(id=244, isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))
+                    book_list.append(dict(id=temp_list[i]["id"], isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))
                     
             return render_template("search.html", book_list=book_list)
     else:

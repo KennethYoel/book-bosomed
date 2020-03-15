@@ -61,8 +61,8 @@
                   <a href="#" onclick="document.getElementById('{{ items.id }}').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> 
                   <span class="d-block pb-1">by {{ items.author|e }}</span>
                   published {{ items.year|e }}
-                  | avg. rating {{ items.rate_average|e }} 
-                  | ratings {{ items.rate_count|e }} 
+                  | {{ items.rate_average|e }} average based on  
+                  {{ items.rate_count|e }} ratings  
                   | ISBN:{{ items.isbn|e }}
                 </p>
               </form>
