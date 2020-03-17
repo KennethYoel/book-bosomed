@@ -55,17 +55,14 @@
           </form>
           {% for items in book_list %} <!-- Here I have converted a link into submit button and added the book id to the input value -->
             <div class="media text-muted pt-3 border-bottom border-gray">
-              <form id="{{ items.id }}" action="{{ url_for('book') }}" method="post">
-                <p class="media-body pb-3 mb-0 small lh-125">
-                  <input type="hidden" name="book-id" value="{{ items.id }}" />
-                  <a href="#" onclick="document.getElementById('{{ items.id }}').submit();"><strong class="d-block">{{ items.title|e }}</strong></a> 
-                  <span class="d-block pb-1">by {{ items.author|e }}</span>
-                  published {{ items.year|e }}
-                  | {{ items.rate_average|e }} average based on  
-                  {{ items.rate_count|e }} ratings  
-                  | ISBN:{{ items.isbn|e }}
-                </p>
-              </form>
+              <p class="media-body pb-3 mb-0 small lh-125">
+                <a href="/book/{{ items.id }}"><strong class="d-block">{{ items.title|e }}</strong></a> 
+                <span class="d-block pb-1">by {{ items.author|e }}</span>
+                published {{ items.year|e }}
+                | {{ items.rate_average|e }} average based on  
+                {{ items.rate_count|e }} ratings  
+                | ISBN:{{ items.isbn|e }}
+              </p>
             </div>
           {% endfor %}
           {% if nonsuch %}
