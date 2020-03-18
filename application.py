@@ -183,11 +183,14 @@ def search():
     else:
         return render_template("login.html")
     
-@app.route("/book/<int:book_id>", methods=["GET"])
+@app.route("/book/<int:book_id>", methods=["GET", "POST"])
 def book(book_id):
     """Book Page"""
     
     if 'user_id' in session:
+        # Readers review
+        book_review = request.form.get("reader_review")
+        
         # Book information
         the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
         
@@ -205,6 +208,8 @@ def book(book_id):
         description = doc.GoodreadsResponse.book.description.cdata
         cover_img = doc.GoodreadsResponse.book.image_url.cdata
         
-        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        
+        
+        return render_template("book.html", book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")

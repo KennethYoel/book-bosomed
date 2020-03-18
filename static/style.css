@@ -131,7 +131,7 @@ main .container {
   /* Stay in place */
   z-index: 1;
   /* Sit on top */
-  padding-top: 100px;
+  padding-top: 200px;
   /* Location of the box */
   left: 0;
   top: 0;
@@ -151,7 +151,7 @@ main .container {
 .modal-content {
   margin: auto;
   display: block;
-  width: 80%;
+  width: 20%;
   max-width: 700px;
 }
 
@@ -182,28 +182,54 @@ main .container {
     transform: scale(1);
   }
 }
-/* The Close Button */
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.close:hover,
-.close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 700px) {
   .modal-content {
     width: 100%;
+  }
+}
+/*
+ * Review
+ */
+/* Style the container with a rounded border, grey background and some padding and margin */
+.reviews {
+  border: 2px solid #ccc;
+  background-color: #eee;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+/* Clear floats after containers */
+.reviews::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Float images inside the container to the left. Add a right margin, and style the image as a circle */
+.reviews img {
+  float: left;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+/* Increase the font-size of a span element */
+.reviews span {
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+/* Add media queries for responsiveness. This will center both the text and the image inside the container */
+@media (max-width: 500px) {
+  .reviews {
+    text-align: center;
+  }
+
+  .reviews img {
+    margin: auto;
+    float: none;
+    display: block;
   }
 }
 /*

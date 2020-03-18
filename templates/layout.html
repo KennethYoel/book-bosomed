@@ -13,6 +13,9 @@
 
       <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
+      <!-- Quill stylesheet a rich text editor -->
+      <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
       <title>{% block title %}{% endblock %}</title>
     {% endblock %}
   </head>
@@ -37,6 +40,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
     <script src="static/out/feather.js"</script>
     <script src="static/out/form-validation.js"></script>
-    <script src="static/out/modal-image.js"></script>
+    <!-- Include the Quill library -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="/static/out/quill.js"></script>
   </body>
 </html>
