@@ -53,7 +53,7 @@
               </div>
             </div>
           </form>
-          {% for items in book_list %} <!-- Here I have converted a link into submit button and added the book id to the input value -->
+          {% for items in book_list %} <!-- Here I have passed the db id number to the book route -->
             <div class="media text-muted pt-3 border-bottom border-gray">
               <p class="media-body pb-3 mb-0 small lh-125">
                 <a href="/book/{{ items.id }}"><strong class="d-block">{{ items.title|e }}</strong></a> 

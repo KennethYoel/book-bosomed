@@ -8,6 +8,7 @@ Created on Wed Feb 26 03:00:01 2020
 
 import os
 import datetime
+import untangle
 
 from flask import Flask, render_template, session, request, redirect
 from flask_session import Session
@@ -198,7 +199,10 @@ def book(book_id):
         else:
             total_ratings = comma(rating_results["rate_count"])
             average_ratings = rating_results["rate_average"]
+            
+        doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{the_book[0]["isbn"]}?key=GZZX52IAd0zxYaYnZOsw')
+        description = doc.GoodreadsResponse.book.description.cdata
         
-        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings)
+        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, description=description)
     else:
         return render_template("login.html")
