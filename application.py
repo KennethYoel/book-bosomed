@@ -10,7 +10,7 @@ import os
 import datetime
 import untangle
 
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, jsonify
 from flask_session import Session
 
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -182,6 +182,7 @@ def search():
             return render_template("search.html", book_list=book_list)
     else:
         return render_template("login.html")
+
     
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
 def book(book_id):
@@ -191,16 +192,20 @@ def book(book_id):
         # Query database for username
         customers_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchall()
         
+        # Book information
+        the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
+        
         # Readers review
         book_rating = request.form.get("book_rating")
         book_review = request.form.get("reader_review")
         
-        db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-        
-        db.commit()
-        
-        # Book information
-        the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
+        # Make sure a posted review by the user doesn't already exist for the book requested.
+        review_rows = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" : book_id})
+        if review_rows == 0:
+            db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
+            db.commit()
+        else:
+            customer_review = review_rows.fetchall()
         
         # Getting Goodreads API information
         rating_results = goodreads_review(the_book[0]["isbn"])
@@ -216,6 +221,30 @@ def book(book_id):
         description = doc.GoodreadsResponse.book.description.cdata
         cover_img = doc.GoodreadsResponse.book.image_url.cdata
         
-        return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=book_rating, book_review=book_review, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=customer_review[0]["rating"], book_review=customer_review[0]["book_review"], book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")
+  
+    
+@app.route("/api/<str:isbn>", methods=["GET"])
+def book_api(isbn):
+    """Return details book’s title, author, publication date, ISBN number, review count, and average score."""
+    
+    # Make sure the requested book exists.
+    the_book = db.execute("SELECT * FROM book WHERE isbn = :isbn", {"isbn" : isbn})
+    if the_book is None:
+        return jsonify({"error": "Invalid book_api"}), 404
+    
+    # Get all the book information.
+    pages = the_book.fetchall()
+    
+    users_review = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" :pages[0["id"]]}).fetchall()
+    
+    return jsonify({
+            "title": pages[0]["title"],
+            "author": pages[0]["author"],
+            "publication_date": pages[0]["year"],
+            "ISBN": pages[0]["isbn"],
+            "review_count" : users_review[0]["rate_count"],
+            "average_score" : users_review[0]["rate_average"]
+            })
