@@ -257,12 +257,12 @@ main .container {
   padding: 0 10px;
 }
 
-.rating:not(:checked) > .star-input {
+.rating:not(:checked) .star-input {
   position: absolute;
   top: -9999px;
 }
 
-.rating:not(:checked) > .star-label {
+.rating:not(:checked) .star-label {
   float: right;
   width: 1em;
   overflow: hidden;
@@ -272,11 +272,11 @@ main .container {
   color: #ccc;
 }
 
-.rating:not(:checked) > .star-label:before {
+.rating:not(:checked) .star-label:before {
   content: "★ ";
 }
 
-.rating > .star-input:checked ~ .star-label {
+.rating .star-input:checked ~ .star-label {
   color: #ffc700;
 }
 

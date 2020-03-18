@@ -188,9 +188,16 @@ def book(book_id):
     """Book Page"""
     
     if 'user_id' in session:
+        # Query database for username
+        customers_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchall()
+        
         # Readers review
         book_rating = request.form.get("book_rating")
         book_review = request.form.get("reader_review")
+        
+        db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
+        
+        db.commit()
         
         # Book information
         the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
@@ -209,8 +216,6 @@ def book(book_id):
         description = doc.GoodreadsResponse.book.description.cdata
         cover_img = doc.GoodreadsResponse.book.image_url.cdata
         
-        
-        
-        return render_template("book.html", book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=book_rating, book_review=book_review, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")

@@ -237,24 +237,32 @@ main {
   height: 46px;
   padding: 0 10px;
 }
-.rating:not(:checked) > .star-input {
-  position: absolute;
-  top: -9999px;
+.rating:not(:checked) {
+  .star-input {
+    position: absolute;
+    top: -9999px;
+  }
 }
-.rating:not(:checked) > .star-label {
-  float: right;
-  width: 1em;
-  overflow: hidden;
-  white-space: nowrap;
-  cursor: pointer;
-  font-size: 30px;
-  color: #ccc;
+.rating:not(:checked) {
+  .star-label {
+    float: right;
+    width: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 30px;
+    color: #ccc;
+  }
 }
-.rating:not(:checked) > .star-label:before {
-  content: '★ ';
+.rating:not(:checked) {
+  .star-label:before {
+    content: '★ ';
+  }
 }
-.rating > .star-input:checked ~ .star-label {
-  color: #ffc700;
+.rating {
+  .star-input:checked ~ .star-label {
+    color: #ffc700;
+  }
 }
 .rating:not(:checked) > .star-label:hover,
 .rating:not(:checked) > .star-label:hover ~ .star-label {
