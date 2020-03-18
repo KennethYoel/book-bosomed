@@ -200,9 +200,11 @@ def book(book_id):
             total_ratings = comma(rating_results["rate_count"])
             average_ratings = rating_results["rate_average"]
             
+        # Get xml data from goodreads api   
         doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{the_book[0]["isbn"]}?key=GZZX52IAd0zxYaYnZOsw')
         description = doc.GoodreadsResponse.book.description.cdata
+        cover_img = doc.GoodreadsResponse.book.image_url.cdata
         
-        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, description=description)
+        return render_template("book.html", the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")

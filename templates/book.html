@@ -20,6 +20,9 @@
             <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('search') }}">Search</a>
+            </li>
+            <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
             </li>
             <li class="nav-item border rounded">
@@ -31,20 +34,34 @@
 {% endblock %}
 
 {% block content %}
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-6 my-auto text-white">
-                <ul>
-                    <li><strong>{{ the_title|e }}</strong></li>
-                    <li>Total Rating {{ total_ratings|e }}</li>
-                    <li>Avg Rating {{ average_ratings|e }}</li>
-                    <li>by {{ the_author|e }}</li>
-                    <li>published {{ the_year|e }}</li>
-                    <li>ISBN:{{ the_isbn|e }}</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <p>{{ description|safe }}</p>
+    <main role="main" class="flex-shrink-0 mt-2 h-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <!-- Trigger the Modal -->
+                    <img id="coverImg" src="{{ cover_img|safe }}" alt="{{ the_title|e }}"  style="width:146px;height:222px;" />
+                </div>
+                <!-- The Modal -->
+                <div id="myModal" class="modal">
+                    <!-- The Close Button -->
+                    <span class="close">&times;</span>
+
+                    <!-- Modal Content (The Image) -->
+                    <img class="modal-content" id="showCoverImg">
+
+                    <!-- Modal Caption (Image Text) -->
+                    <div id="caption"></div>
+                </div>
+                <div class="col-md-10 text-white">
+                    <p>
+                        <strong class="d-block">{{ the_title|e }}</strong>
+                        <span class="d-block pb-1">by {{ the_author|e }}</span>
+                        Total Rating {{ total_ratings|e }} |
+                        Avg Rating {{ average_ratings|e }} |
+                        published {{ the_year|e }}
+                    </p>
+                    <p>{{ description|safe }}</p>
+                </div>
             </div>
         </div>
     </main>
