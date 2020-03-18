@@ -189,6 +189,7 @@ def book(book_id):
     
     if 'user_id' in session:
         # Readers review
+        book_rating = request.form.get("book_rating")
         book_review = request.form.get("reader_review")
         
         # Book information

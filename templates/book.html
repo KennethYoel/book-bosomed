@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block content %}
-    <main role="main" class="flex-shrink-0 mt-2 h-100">
+    <main role="main" class="flex-shrink-0 mt-3 mb-4 h-100">
         <div class="container">
             <div class="row">
                 <div class="col-sm-3">
@@ -61,24 +61,35 @@
                         published {{ the_year|e }}
                     </p>
                     <p>{{ description|safe }}</p>
+                    <form action="/book/{{ book_id }}" method="post">
+                        <span class="rating" >
+                            <input type="radio" class="form-control star-input" id="star5" name="book_rating" value="5" />
+                            <label for="star5" class="star-label" title="text">5 stars</label>
+                            <input type="radio" class="form-control star-input" id="star4" name="book_rating" value="4" />
+                            <label for="star4" class="star-label" title="text">4 stars</label>
+                            <input type="radio" class="form-control star-input" id="star3" name="book_rating" value="3" />
+                            <label for="star3" class="star-label" title="text">3 stars</label>
+                            <input type="radio" class="form-control star-input" id="star2" name="book_rating" value="2" />
+                            <label for="star2" class="star-label" title="text">2 stars</label>
+                            <input type="radio" class="form-control star-input" id="star1" name="book_rating" value="1" />
+                            <label for="star1" class="star-label" title="text">1 star</label>
+                        </span>
+                    </form>
                 </div>
             </div>
             <div class="col-sm-10 mx-auto mt-2 mb-2 p-3 bg-white rounded shadow-sm">
                 <h4>User, start your review of {{ the_title|e }}</h4>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
-                <form action="/book/{{ book_id }}" method="post" class="border-bottom pb-2 mb-0">
-                    <label for="description" class="col-form-label text-right">Your Thoughts</label>
-                    <div id="parent">
-                    <div id="editor"></div>
-                    <input type="hidden" id="review-book" name="reader_review" aria-label="Book Review" aria-describedby="review-button" />
-                    <!--<textarea id="description" name="description"></textarea>-->
-                    </div>
-                    <button class="btn btn-primary mt-2" type="submit" id="review-button">Submit Review</button>
-                </form>
+                <div>
+                    <form action="/book/{{ book_id }}" method="post" class="border-bottom pb-2">
+                        <label for="description" class="col-form-label">Your Thoughts</label>
+                        <div id="parent">
+                            <div id="editor"></div>
+                            <input type="hidden" class="form-control" id="review-book" name="reader_review" aria-label="Book Review" aria-describedby="review-button" />
+                            <!--<textarea id="description" name="description"></textarea>-->
+                        </div>
+                        <button class="btn btn-primary mt-2" type="submit" id="review-button">Submit Review</button>
+                    </form>
+                </div>
                 {% for items in review_list %}
                     <div class="reviews media text-muted pt-3 border-bottom border-gray">
                         <img src="bandmember.jpg" alt="Avatar" style="width:90px">
