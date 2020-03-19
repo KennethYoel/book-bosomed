@@ -238,6 +238,11 @@ def book_api(isbn):
     # Get all the book information.
     pages = the_book.fetchall()
     
+    # Calculate the sum and average of the user's rating's and then insert into review.
+    total = db.execute("SELECT COALESCE(SUM(rating),0) AS total FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["book_id"]}).fetchall()
+    average_amount = db.execute("SELECT AVG(rating) AS average_amount FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["book_id"]}).fetchall()
+    db.execute("INSERT INTO review (rate_count, rate_average) VALUES (:rate_count, :rate_average)", {"rate_count" : total, "rate_average" : average_amount})
+    
     users_review = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" :pages[0["id"]]}).fetchall()
     
     return jsonify({
