@@ -192,20 +192,34 @@ def book(book_id):
         # Query database for username
         customers_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchall()
         
-        # Book information
+        # Get book information
         the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
+        
+        # Get book reviews information
+        book_reviews = db.execute("SELECT rating, book_review, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE customer.id = :id", {"id" : session["user_id"]}).fetchall()
         
         # Readers review
         book_rating = request.form.get("book_rating")
         book_review = request.form.get("reader_review")
         
+        if not book_rating or book_review:
+            customer_rating = 0
+            customer_review = ""
+        
         # Make sure a posted review by the user doesn't already exist for the book requested.
         review_rows = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" : book_id})
         if review_rows == 0:
-            db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-            db.commit()
+            db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})     
         else:
-            customer_review = review_rows.fetchall()
+            customers_feedback = review_rows.fetchall()
+            customer_rating = customers_feedback[0]["rating"]
+            customer_review = customers_feedback[0]["book_review"]
+            
+         # Calculate the sum and average of the user's rating's and then update review.
+        db.execute("UPDATE review SET rate_count = COALESCE(SUM(rating),0) WHERE book_id = :book_id;", {"book_id" : the_book[0]["id"]})
+        db.execute("UPDATE review SET rate_average = COALESCE(AVG(rating),0) WHERE book_id = :book_id;", {"book_id" : the_book[0]["id"]})
+        
+        db.commit()
         
         # Getting Goodreads API information
         rating_results = goodreads_review(the_book[0]["isbn"])
@@ -221,12 +235,15 @@ def book(book_id):
         description = doc.GoodreadsResponse.book.description.cdata
         cover_img = doc.GoodreadsResponse.book.image_url.cdata
         
-        return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=customer_review[0]["rating"], book_review=customer_review[0]["book_review"], book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        # have issue with the following gets list index out of range error
+        book_rating = book_reviews[0]["rating"], book_review = book_reviews[0]["book_review"]
+        
+        return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=customer_rating, book_review=customer_review, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")
   
     
-@app.route("/api/<str:isbn>", methods=["GET"])
+@app.route("/api/<string:isbn>", methods=["GET"])
 def book_api(isbn):
     """Return details book’s title, author, publication date, ISBN number, review count, and average score."""
     
@@ -238,18 +255,15 @@ def book_api(isbn):
     # Get all the book information.
     pages = the_book.fetchall()
     
-    # Calculate the sum and average of the user's rating's and then insert into review.
-    total = db.execute("SELECT COALESCE(SUM(rating),0) AS total FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["book_id"]}).fetchall()
-    average_amount = db.execute("SELECT AVG(rating) AS average_amount FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["book_id"]}).fetchall()
-    db.execute("INSERT INTO review (rate_count, rate_average) VALUES (:rate_count, :rate_average)", {"rate_count" : total, "rate_average" : average_amount})
-    
-    users_review = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" :pages[0["id"]]}).fetchall()
+    users_review = db.execute("SELECT * FROM review WHERE book_id = :book_id", {"book_id" : pages[0["id"]]}).fetchall()
+    review_count = users_review[0]["rate_count"]
+    average_score = users_review[0]["rate_average"]
     
     return jsonify({
             "title": pages[0]["title"],
             "author": pages[0]["author"],
             "publication_date": pages[0]["year"],
             "ISBN": pages[0]["isbn"],
-            "review_count" : users_review[0]["rate_count"],
-            "average_score" : users_review[0]["rate_average"]
+            "review_count" : review_count,
+            "average_score" : average_score
             })
