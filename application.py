@@ -196,7 +196,7 @@ def book(book_id):
         the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
         
         # Get book reviews information
-        book_reviews = db.execute("SELECT rating, book_review, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE customer.id = :id", {"id" : session["user_id"]}).fetchall()
+        review_list = db.execute("SELECT * FROM review WHERE book_id = :id", {"id" : book_id}).fetchall()
         
         # Getting Goodreads API information
         rating_results = goodreads_review(the_book[0]["isbn"])
@@ -224,18 +224,15 @@ def book(book_id):
                 book_review = ""
             
             # Make sure a posted review by the user doesn't already exist for the book requested.
-            review_rows = db.execute("SELECT book_review, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE customer.id = :id", {"id" : session["user_id"]})
-            if review_rows.rowcount == 0:
-                db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})     
-                customer_rating = book_reviews[0]["rating"]
-                customer_review = book_reviews[0]["book_review"]
-            else:
-                customer_rating = book_reviews[0]["rating"]
-                customer_review = book_reviews[0]["book_review"]
-                
-            return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=customer_rating, book_review=customer_review, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+            review_rows = db.execute("SELECT book_review, book_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE customer.id = :id", {"id" : session["user_id"]}).fetchall();
+            if len(review_rows) != 1 or review_rows[0]["book_id"] != book_id:
+                db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
+                db.commit()
+            
+            return render_template("book.html", customer_name=customers_name[0]["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        
         else:
-            return render_template("book.html", customer_name=customers_name[0]["username"], book_rating=book_reviews[0]["rating"], book_review=book_reviews[0]["book_review"], book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+            return render_template("book.html", customer_name=customers_name[0]["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")
   
