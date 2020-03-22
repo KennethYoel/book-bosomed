@@ -255,18 +255,15 @@ def book_api(isbn):
     # Calculate the sum and average of the user's rating's and then insert into review.
     rating_total = db.execute("SELECT COALESCE(SUM(rating),0) AS rating_total FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["id"]}).fetchone()
     rating_avg = db.execute("SELECT COALESCE(AVG(rating),0) AS rating_avg FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["id"]}).fetchone()
-    db.execute("UPDATE book SET rate_count = :rate_count, rate_average = :rate_average WHERE id = :id", {"rate_count" : rating_total[0], "rating_average" : rating_avg[0], "id" : pages[0]["id"]})
+    db.execute("UPDATE book SET rate_count = :rate_count, rate_average = :rate_average WHERE id = :id", {"rate_count" : rating_total[0], "rate_average" : rating_avg[0], "id" : pages[0]["id"]})
     
     db.commit()
-    
-    review_count = pages[0]["rate_count"]
-    average_score = pages[0]["rate_average"]
     
     return jsonify({
             "title": pages[0]["title"],
             "author": pages[0]["author"],
             "publication_date": pages[0]["year"],
             "ISBN": pages[0]["isbn"],
-            "review_count" : review_count,
-            "average_score" : average_score
+            "review_count" : pages[0]["rate_count"],
+            "average_score" : pages[0]["rate_average"]
             })
