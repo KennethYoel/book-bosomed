@@ -90,16 +90,8 @@
             </div>
 
             <div class="col-sm-10 mx-auto my-2 p-3 bg-white rounded shadow-sm">
-                <h6 class="mb-0">said {{ customer_name|e }}</h6>
-                <div class="media text-muted pt-2">
-                    <div class="media-body pb-1 mb-0 small lh-125 border-bottom">
-                        <div class="d-flex align-items-center w-100">
-                            <p>Rates it 0 out of 5 and said, {{ review_list|e }}</p>
-                        </div>
-                    </div>
-                </div>
                 {% for items in review_list %}
-                    <h6 class="mb-0 mt-3">said {{ items.customer_id|e }}</h6>
+                    <h6 class="mb-0 mt-3">said {{ items.username|e }}</h6>
                         <div class="media text-muted pt-2">
                             <div class="media-body pb-1 mb-0 small lh-125 border-bottom">
                                 <div class="d-flex align-items-center w-100">

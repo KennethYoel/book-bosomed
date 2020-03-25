@@ -2,16 +2,11 @@
 /*
  * Base structure
  */
-html,
-body {
-  height: 100%;
-}
-
 body {
   padding-top: 40px;
   padding-bottom: 40px;
   background-color: #3f3f3f;
-  font-family: "PT Sans", sans-serif;
+  font-family: 'PT Sans', sans-serif;
 }
 
 /*
@@ -84,14 +79,14 @@ main .container {
   z-index: 2;
 }
 
-.form-signup input[type=email] {
+.form-signup input[type='email'] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.form-signup input[type=password],
-.form-signin input[type=password] {
+.form-signup input[type='password'],
+.form-signin input[type='password'] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -221,7 +216,7 @@ main .container {
 
 /* Clear floats after containers */
 .reviews::after {
-  content: "";
+  content: '';
   clear: both;
   display: table;
 }
@@ -273,7 +268,7 @@ main .container {
 }
 
 .rating:not(:checked) .star-label:before {
-  content: "★ ";
+  content: '★ ';
 }
 
 .rating .star-input:checked ~ .star-label {
@@ -306,7 +301,6 @@ main .container {
 .footer p:last-child {
   margin-bottom: 0;
 }
-
 .footer .container {
   padding-right: 1.8rem;
   padding-left: 1.8rem;

@@ -37,6 +37,6 @@ def goodreads_review(isbn):
     except (KeyError, TypeError, ValueError):
         return None
     
-def comma(value):
-    """Format value for comma placement."""
+def commaSeparator(value):
+    """Format value for adding a comma for each group of three numbers, aka period."""
     return f"{value:,.0f}"

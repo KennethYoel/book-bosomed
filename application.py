@@ -18,7 +18,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from helpers import goodreads_review, comma
+from helpers import goodreads_review, commaSeparator
 
 app = Flask(__name__)
 
@@ -164,7 +164,7 @@ def search():
             else:
                 temp_list = book_rows.fetchall()
                 ratings = goodreads_review(temp_list[0]["isbn"])
-                book_list = [(dict(id=temp_list[0]["id"], isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=comma(ratings["rate_count"])))]
+                book_list = [(dict(id=temp_list[0]["id"], isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=commaSeparator(ratings["rate_count"])))]
                 
                 # Add the db information and goodreads api to book_list
                 for i in range(1, len(temp_list)):
@@ -174,7 +174,7 @@ def search():
                         total_ratings = 0
                         average_ratings = 0.0
                     else:
-                        total_ratings = comma(ratings["rate_count"])
+                        total_ratings = commaSeparator(ratings["rate_count"])
                         average_ratings = ratings["rate_average"]
                         
                     book_list.append(dict(id=temp_list[i]["id"], isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=average_ratings, rate_count=total_ratings))
@@ -189,14 +189,14 @@ def book(book_id):
     """Book Page"""
     
     if 'user_id' in session:
-        # Query database for username
-        customers_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchall()
-        
         # Get book information
         the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
         
         # Get book reviews information
-        review_list = db.execute("SELECT rating, book_review, book_id, customer_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE book_id = :id", {"id" : book_id}).fetchall()
+        review_list = db.execute("SELECT rating, book_review, book_id, username, customer_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE book_id = :id", {"id" : book_id}).fetchall()
+        
+        # Get username for the customer db
+        customer_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchone()
         
         # Getting Goodreads API information
         rating_results = goodreads_review(the_book[0]["isbn"])
@@ -204,7 +204,7 @@ def book(book_id):
             total_ratings = 0
             average_ratings = 0.0
         else:
-            total_ratings = comma(rating_results["rate_count"])
+            total_ratings = commaSeparator(rating_results["rate_count"])
             average_ratings = rating_results["rate_average"]
             
         # Get xml data from goodreads api   
@@ -223,7 +223,7 @@ def book(book_id):
             if not book_review:
                 book_review = ""
             
-            # Make sure a posted review by the user doesn't already exist for the book requested.
+            # Make sure a posted review by the user doesn't already exist for the book requested before inserting it into db.
             review_rows = db.execute("SELECT book_id FROM review WHERE customer_id = :customer_id", {"customer_id" : session["user_id"]}).fetchall();
             if len(review_rows) != 1:
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
@@ -231,10 +231,10 @@ def book(book_id):
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
             db.commit()
             
-            return render_template("book.html", customer_name=customers_name[0]["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+            return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
         
         else:
-            return render_template("book.html", customer_name=customers_name[0]["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+            return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     else:
         return render_template("login.html")
   
