@@ -34,13 +34,13 @@ try:
 except csv.Error:
     print("Unable to open the file.")
 
-db.execute("CREATE TABLE IF NOT EXISTS book (id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INT NOT NULL, rate_count INT NOT NULL, rate_average INT NOT NULL)")
+db.execute("CREATE TABLE IF NOT EXISTS book (id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INT NOT NULL, rate_count INT, rate_average INT)")
 
 for isbn, title, author, year in islice(reader, 1, None): # loop gives each column a name and islice skip the first item(s).
     while len(isbn) < 10:
         isbn = "0" + isbn
     else:
-        db.execute("INSERT INTO book (isbn, title, author, year) VALUES (:isbn, :title, :author, :year, :rate_count, :rate:average)", {"isbn" : isbn, "title" : title, "author" : author, "year" : int(year), "rate_count" : 0, "rate_average" : 0})
+        db.execute("INSERT INTO book (isbn, title, author, year, rate_count, rate_average) VALUES (:isbn, :title, :author, :year, :rate_count, :rate_average)", {"isbn" : isbn, "title" : title, "author" : author, "year" : int(year), "rate_count" : 0, "rate_average" : 0})
         #print(f"Added into book db ISBN: {isbn} Title: {title} Author: {author} Year: {year}")
     
 db.commit() #transactions are assumed, so close the transaction finished
