@@ -3,10 +3,9 @@
  * Base structure
  */
 body {
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 20px;
   background-color: #3f3f3f;
-  font-family: 'PT Sans', sans-serif;
+  font-family: "PT Sans", sans-serif;
 }
 
 /*
@@ -79,14 +78,14 @@ main .container {
   z-index: 2;
 }
 
-.form-signup input[type='email'] {
+.form-signup input[type=email] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.form-signup input[type='password'],
-.form-signin input[type='password'] {
+.form-signup input[type=password],
+.form-signin input[type=password] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -205,47 +204,6 @@ main .container {
 /*
  * Review
  */
-/* Style the container with a rounded border, grey background and some padding and margin */
-.reviews {
-  border: 2px solid #ccc;
-  background-color: #eee;
-  border-radius: 5px;
-  padding: 16px;
-  margin: 16px 0;
-}
-
-/* Clear floats after containers */
-.reviews::after {
-  content: '';
-  clear: both;
-  display: table;
-}
-
-/* Float images inside the container to the left. Add a right margin, and style the image as a circle */
-.reviews img {
-  float: left;
-  margin-right: 20px;
-  border-radius: 50%;
-}
-
-/* Increase the font-size of a span element */
-.reviews span {
-  font-size: 20px;
-  margin-right: 15px;
-}
-
-/* Add media queries for responsiveness. This will center both the text and the image inside the container */
-@media (max-width: 500px) {
-  .reviews {
-    text-align: center;
-  }
-
-  .reviews img {
-    margin: auto;
-    float: none;
-    display: block;
-  }
-}
 .rating {
   float: left;
   height: 46px;
@@ -268,7 +226,7 @@ main .container {
 }
 
 .rating:not(:checked) .star-label:before {
-  content: '★ ';
+  content: "★ ";
 }
 
 .rating .star-input:checked ~ .star-label {
@@ -301,6 +259,7 @@ main .container {
 .footer p:last-child {
   margin-bottom: 0;
 }
+
 .footer .container {
   padding-right: 1.8rem;
   padding-left: 1.8rem;
