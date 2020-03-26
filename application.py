@@ -5,7 +5,6 @@ Created on Wed Feb 26 03:00:01 2020
 @author: KennethJoel
 """
 
-
 import os
 import datetime
 import untangle
@@ -40,15 +39,13 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/", methods=["GET"])
 def index():
     """Index page where users register"""
-
     # Render the main page-index
     return render_template("index.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """"Registration page"""
-    
+    """"Registration page"""  
     # Forget any user_id
     session.clear()
 
@@ -91,7 +88,6 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
-
     # Forget any user_id
     session.clear()
     
@@ -133,7 +129,6 @@ def login():
 @app.route("/logout")
 def logout():
     """Log user out"""
-
     # Forget any user_id
     session.clear()
 
@@ -144,8 +139,7 @@ def logout():
 @app.route("/search", methods=["GET", "POST"])
 @login_required
 def search():
-    """Home page for book review site"""
-    
+    """Home page for book review site"""  
     # Query for requested book in the database
     if request.method == "GET":
         return render_template("search.html")
@@ -186,8 +180,7 @@ def search():
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
 @login_required
 def book(book_id):
-    """Book Page"""
-    
+    """Book Page"""  
     # Get book information
     the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
     
@@ -245,8 +238,7 @@ def book(book_id):
     
 @app.route("/api/<string:isbn>", methods=["GET"])
 def book_api(isbn):
-    """Return details book’s title, author, publication date, ISBN number, review count, and average score."""
-    
+    """Return details book’s title, author, publication date, ISBN number, review count, and average score."""   
     # Make sure the requested book exists.
     the_book = db.execute("SELECT * FROM book WHERE isbn = :isbn", {"isbn" : isbn})
     if the_book is None:
