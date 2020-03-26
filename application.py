@@ -13,12 +13,13 @@ import untangle
 from flask import Flask, render_template, session, request, redirect, jsonify
 from flask_session import Session
 
+from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from helpers import goodreads_review, commaSeparator
+from helpers import apology, login_required, goodreads_review, commaSeparator
 
 app = Flask(__name__)
 
@@ -141,109 +142,105 @@ def logout():
 
 
 @app.route("/search", methods=["GET", "POST"])
+@login_required
 def search():
     """Home page for book review site"""
     
     # Query for requested book in the database
-    if 'user_id' in session:
-        if request.method == "GET":
-            return render_template("search.html")
-        else:
-            # Get form information.
-            requested = request.form.get("search-books")
-            search_book = '%'+requested+'%'
-            
-            # Ensure a request was submitted
-            if not requested:
-                return render_template("search.html", nonsuch='Please enter ISBN, title or author to be searched.')
-            
-            # Make sure the requested book exist
-            book_rows = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book})
-            if book_rows.rowcount == 0:
-                return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
-            else:
-                temp_list = book_rows.fetchall()
-                ratings = goodreads_review(temp_list[0]["isbn"])
-                book_list = [(dict(id=temp_list[0]["id"], isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=commaSeparator(ratings["rate_count"])))]
-                
-                # Add the db information and goodreads api to book_list
-                for i in range(1, len(temp_list)):
-                    # Getting Goodreads API information
-                    ratings = goodreads_review(temp_list[i]["isbn"])
-                    if ratings == None:
-                        total_ratings = 0
-                        average_ratings = 0.0
-                    else:
-                        total_ratings = commaSeparator(ratings["rate_count"])
-                        average_ratings = ratings["rate_average"]
-                        
-                    book_list.append(dict(id=temp_list[i]["id"], isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=average_ratings, rate_count=total_ratings))
-                    
-            return render_template("search.html", book_list=book_list)
+    if request.method == "GET":
+        return render_template("search.html")
     else:
-        return render_template("login.html")
+        # Get form information.
+        requested = request.form.get("search-books")
+        search_book = '%'+requested+'%'
+        
+        # Ensure a request was submitted
+        if not requested:
+            return render_template("search.html", nonsuch='Please enter ISBN, title or author to be searched.')
+        
+        # Make sure the requested book exist
+        book_rows = db.execute("SELECT * FROM book WHERE isbn LIKE :isbn OR title ILIKE :title OR author ILIKE :author", {"isbn" : search_book, "title" : search_book, "author" : search_book})
+        if book_rows.rowcount == 0:
+            return render_template("search.html", nonsuch='The Requested Book Is Not On The List')
+        else:
+            temp_list = book_rows.fetchall()
+            ratings = goodreads_review(temp_list[0]["isbn"])
+            book_list = [(dict(id=temp_list[0]["id"], isbn=temp_list[0]["isbn"], title=temp_list[0]["title"], author=temp_list[0]["author"], year=temp_list[0]["year"], rate_average=ratings["rate_average"], rate_count=commaSeparator(ratings["rate_count"])))]
+            
+            # Add the db information and goodreads api to book_list
+            for i in range(1, len(temp_list)):
+                # Getting Goodreads API information
+                ratings = goodreads_review(temp_list[i]["isbn"])
+                if ratings == None:
+                    total_ratings = 0
+                    average_ratings = 0.0
+                else:
+                    total_ratings = commaSeparator(ratings["rate_count"])
+                    average_ratings = ratings["rate_average"]
+                    
+                book_list.append(dict(id=temp_list[i]["id"], isbn=temp_list[i]["isbn"], title=temp_list[i]["title"], author=temp_list[i]["author"], year=temp_list[i]["year"], rate_average=average_ratings, rate_count=total_ratings))
+                
+        return render_template("search.html", book_list=book_list)
 
     
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
+@login_required
 def book(book_id):
     """Book Page"""
     
-    if 'user_id' in session:
-        # Get book information
-        the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
-        
-        # Get book reviews information
-        review_list = db.execute("SELECT rating, book_review, book_id, username, customer_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE book_id = :id", {"id" : book_id}).fetchall()
-        
-        # Get username for the customer db
-        customer_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchone()
-        
-        # Getting Goodreads API information
-        rating_results = goodreads_review(the_book[0]["isbn"])
-        if rating_results == None:
-            total_ratings = 0
-            average_ratings = 0.0
-        else:
-            total_ratings = commaSeparator(rating_results["rate_count"])
-            average_ratings = rating_results["rate_average"]
-            
-        # Get xml data from goodreads api   
-        doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{the_book[0]["isbn"]}?key=GZZX52IAd0zxYaYnZOsw')
-        description = doc.GoodreadsResponse.book.description.cdata
-        cover_img = doc.GoodreadsResponse.book.image_url.cdata
-        
-        if request.method == "POST":
-            # Readers review
-            book_rating = request.form.get("book_rating")
-            book_review = request.form.get("reader_review")
-            
-            if not book_rating:
-                book_rating = 0
-                
-            if not book_review:
-                book_review = ""
-            
-            # Make sure a posted review by the user doesn't already exist for the book requested before inserting it into db.
-            if db.execute("SELECT * FROM review WHERE book_id = :book_id AND customer_id = :customer_id", {"book_id" : book_id, "customer_id" : session["user_id"]}).rowcount != 1:
-                db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-                total_rate_number = the_book[0]["rate_count"]
-                db.execute("UPDATE book SET rate_count = :rate_count WHERE id = :id", {"rate_count" : total_rate_number + 1, "id" : the_book[0]["id"]})
-            else:
-                error = 'I see that you have already submitted a review.'
-                return render_template("book.html", error=error, customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
-            
-            # Calculate the average of the user's rating's and then insert into review.
-            rating_avg = db.execute("SELECT COALESCE(AVG(rating),0) AS rating_avg FROM review WHERE book_id = :book_id;", {"book_id" : the_book[0]["id"]}).fetchone()
-            db.execute("UPDATE book SET rate_average = :rate_average WHERE id = :id", {"rate_average" : rating_avg[0], "id" : the_book[0]["id"]})
-            
-            db.commit()
-            
-            return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
-        
-        else:
-            return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+    # Get book information
+    the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
+    
+    # Get book reviews information
+    review_list = db.execute("SELECT rating, book_review, book_id, username, customer_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE book_id = :id", {"id" : book_id}).fetchall()
+    
+    # Get username for the customer db
+    customer_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchone()
+    
+    # Getting Goodreads API information
+    rating_results = goodreads_review(the_book[0]["isbn"])
+    if rating_results == None:
+        total_ratings = 0
+        average_ratings = 0.0
     else:
-        return render_template("login.html")
+        total_ratings = commaSeparator(rating_results["rate_count"])
+        average_ratings = rating_results["rate_average"]
+        
+    # Get xml data from goodreads api   
+    doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{the_book[0]["isbn"]}?key=GZZX52IAd0zxYaYnZOsw')
+    description = doc.GoodreadsResponse.book.description.cdata
+    cover_img = doc.GoodreadsResponse.book.image_url.cdata
+    
+    if request.method == "POST":
+        # Readers review
+        book_rating = request.form.get("book_rating")
+        book_review = request.form.get("reader_review")
+        
+        if not book_rating:
+            book_rating = 0
+            
+        if not book_review:
+            book_review = ""
+        
+        # Make sure a posted review by the user doesn't already exist for the book requested before inserting it into db.
+        if db.execute("SELECT * FROM review WHERE book_id = :book_id AND customer_id = :customer_id", {"book_id" : book_id, "customer_id" : session["user_id"]}).rowcount != 1:
+            db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
+            total_rate_number = the_book[0]["rate_count"]
+            db.execute("UPDATE book SET rate_count = :rate_count WHERE id = :id", {"rate_count" : total_rate_number + 1, "id" : the_book[0]["id"]})
+        else:
+            error = 'I see that you have already submitted a review.'
+            return render_template("book.html", error=error, customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        
+        # Calculate the average of the user's rating's and then insert into review.
+        rating_avg = db.execute("SELECT COALESCE(AVG(rating),0) AS rating_avg FROM review WHERE book_id = :book_id;", {"book_id" : the_book[0]["id"]}).fetchone()
+        db.execute("UPDATE book SET rate_average = :rate_average WHERE id = :id", {"rate_average" : rating_avg[0], "id" : the_book[0]["id"]})
+        
+        db.commit()
+        
+        return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+    
+    else:
+        return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
   
     
 @app.route("/api/<string:isbn>", methods=["GET"])
@@ -266,3 +263,15 @@ def book_api(isbn):
             "review_count" : pages[0]["rate_count"],
             "average_score" : pages[0]["rate_average"]
             })
+ 
+    
+def errorhandler(e):
+    """Handle error"""
+    if not isinstance(e, HTTPException):
+        e = InternalServerError()
+    return apology(e.name, e.code)
+
+
+# Listen for errors
+for code in default_exceptions:
+    app.errorhandler(code)(errorhandler)
