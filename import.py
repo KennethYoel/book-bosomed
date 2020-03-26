@@ -34,7 +34,7 @@ try:
 except csv.Error:
     print("Unable to open the file.")
 
-db.execute("CREATE TABLE IF NOT EXISTS book (id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INT NOT NULL, rate_count INT, rate_average INT)")
+db.execute("CREATE TABLE IF NOT EXISTS book (id SERIAL PRIMARY KEY, isbn VARCHAR NOT NULL, title VARCHAR NOT NULL, author VARCHAR NOT NULL, year INT NOT NULL, rate_count INT NOT NULL, rate_average SMALLINT NOT NULL)")
 
 for isbn, title, author, year in islice(reader, 1, None): # loop gives each column a name and islice skip the first item(s).
     while len(isbn) < 10:
