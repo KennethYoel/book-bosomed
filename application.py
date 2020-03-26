@@ -226,10 +226,16 @@ def book(book_id):
             # Make sure a posted review by the user doesn't already exist for the book requested before inserting it into db.
             if db.execute("SELECT * FROM review WHERE book_id = :book_id AND customer_id = :customer_id", {"book_id" : book_id, "customer_id" : session["user_id"]}).rowcount != 1:
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
+                total_rate_number = the_book[0]["rate_count"]
+                db.execute("UPDATE book SET rate_count = :rate_count WHERE id = :id", {"rate_count" : total_rate_number + 1, "id" : the_book[0]["id"]})
             else:
                 error = 'I see that you have already submitted a review.'
                 return render_template("book.html", error=error, customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
-        
+            
+            # Calculate the average of the user's rating's and then insert into review.
+            rating_avg = db.execute("SELECT COALESCE(AVG(rating),0) AS rating_avg FROM review WHERE book_id = :book_id;", {"book_id" : the_book[0]["id"]}).fetchone()
+            db.execute("UPDATE book SET rate_average = :rate_average WHERE id = :id", {"rate_average" : rating_avg[0], "id" : the_book[0]["id"]})
+            
             db.commit()
             
             return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
@@ -251,13 +257,6 @@ def book_api(isbn):
     
     # Get all the book information.
     pages = the_book.fetchall()
-    
-    # Calculate the sum and average of the user's rating's and then insert into review.
-    rating_total = db.execute("SELECT COALESCE(SUM(rating),0) AS rating_total FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["id"]}).fetchone()
-    rating_avg = db.execute("SELECT COALESCE(AVG(rating),0) AS rating_avg FROM review WHERE book_id = :book_id;", {"book_id" : pages[0]["id"]}).fetchone()
-    db.execute("UPDATE book SET rate_count = :rate_count, rate_average = :rate_average WHERE id = :id", {"rate_count" : rating_total[0], "rate_average" : rating_avg[0], "id" : pages[0]["id"]})
-    
-    db.commit()
     
     return jsonify({
             "title": pages[0]["title"],
