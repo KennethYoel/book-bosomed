@@ -229,8 +229,7 @@ def book(book_id):
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
             elif review_rows[0]["book_id"] != book_id:
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-            db.commit()
-            
+                db.commit()
             return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
         
         else:
