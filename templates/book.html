@@ -90,6 +90,16 @@
             </div>
 
             <div class="col-sm-10 mx-auto my-2 p-3 bg-white rounded shadow-sm">
+                {% if error %}
+                    <header>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <p class="text-center font-weight-bold my-auto"><i>{{ error }}</i></p>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </header>
+                {% endif %}
                 {% for items in review_list %}
                     <h6 class="mb-0 mt-3">said {{ items.username|e }}</h6>
                         <div class="media text-muted pt-2">

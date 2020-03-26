@@ -224,12 +224,14 @@ def book(book_id):
                 book_review = ""
             
             # Make sure a posted review by the user doesn't already exist for the book requested before inserting it into db.
-            review_rows = db.execute("SELECT book_id FROM review WHERE customer_id = :customer_id", {"customer_id" : session["user_id"]}).fetchall();
-            if len(review_rows) != 1:
+            if db.execute("SELECT * FROM review WHERE book_id = :book_id AND customer_id = :customer_id", {"book_id" : book_id, "customer_id" : session["user_id"]}).rowcount != 1:
                 db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-            elif review_rows[0]["book_id"] != book_id:
-                db.execute("INSERT INTO review (rating, book_review, book_id, customer_id) VALUES (:rating, :book_review, :book_id, :customer_id)", {"rating" : book_rating, "book_review" : book_review, "book_id" : book_id, "customer_id" : session["user_id"]})
-                db.commit()
+            else:
+                error = 'I see that you have already submitted a review.'
+                return render_template("book.html", error=error, customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+        
+            db.commit()
+            
             return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
         
         else:
