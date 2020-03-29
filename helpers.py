@@ -8,6 +8,7 @@ Created on Tue Mar 10 16:21:10 2020
 
 import requests
 import os
+import untangle
 
 from flask import render_template, session, redirect
 from functools import wraps
@@ -51,7 +52,6 @@ def login_required(f):
 
 def goodreads_review(isbn):
     """Look up reviews and ratings for  book."""
-    
     # Contact API
     api_key = os.environ.get("API_KEY")
     response = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": api_key, "isbns": isbn})
@@ -68,6 +68,21 @@ def goodreads_review(isbn):
         }
     except (KeyError, TypeError, ValueError):
         return None
+
+ 
+def goodreads_descriptions(isbn):
+    """Look up book description and cover image."""
+    # Returns multiple values from a method using tuple 
+    # Contact API
+    api_key = os.environ.get("API_KEY")
+    
+    # Get xml data from goodreads api   
+    doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{isbn}?key={api_key}')
+    description = doc.GoodreadsResponse.book.description.cdata
+    cover_img = doc.GoodreadsResponse.book.image_url.cdata
+    
+    return description, cover_img
+    
     
 def commaSeparator(value):
     """Format value for adding a comma for each group of three numbers, aka period."""

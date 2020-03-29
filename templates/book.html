@@ -25,8 +25,8 @@
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
             </li>
-            <li class="nav-item border rounded">
-            <a class="nav-link" href="{{ url_for('register') }}">Sign up</a>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('register') }}"><span class="border rounded p-2">Sign up</span></a>
             </li>
         </ul>
         </div>
@@ -66,7 +66,7 @@
             <div class="col-sm-10 mx-auto mt-2 mb-2 p-3 bg-white rounded shadow-sm">
                 <h4>{{ customer_name|e }}, start your review of {{ the_title|e }}</h4>
                 <div>
-                    <form action="/book/{{ book_id }}" method="post" class="border-bottom pb-2">
+                    <form action="/review/{{ book_id }}" method="post" class="border-bottom pb-2">
                         <label for="description" class="col-form-label">What Do You Think</label>
                         <div>
                             <textarea id="review-book" class="form-control" name="reader_review" rows="3"></textarea>

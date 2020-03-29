@@ -7,7 +7,6 @@ Created on Wed Feb 26 03:00:01 2020
 
 import os
 import datetime
-import untangle
 
 from flask import Flask, render_template, session, request, redirect, jsonify
 from flask_session import Session
@@ -18,7 +17,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from helpers import apology, login_required, goodreads_review, commaSeparator
+from helpers import apology, login_required, goodreads_review, goodreads_descriptions, commaSeparator
 
 app = Flask(__name__)
 
@@ -199,10 +198,36 @@ def book(book_id):
         total_ratings = commaSeparator(rating_results["rate_count"])
         average_ratings = rating_results["rate_average"]
         
-    # Get xml data from goodreads api   
-    doc = untangle.parse(f'https://www.goodreads.com/book/isbn/{the_book[0]["isbn"]}?key=GZZX52IAd0zxYaYnZOsw')
-    description = doc.GoodreadsResponse.book.description.cdata
-    cover_img = doc.GoodreadsResponse.book.image_url.cdata
+    # Get xml data from goodreads api
+    description, cover_img = goodreads_descriptions(the_book[0]["isbn"])
+    
+    return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
+  
+
+@app.route("/review/<int:book_id>", methods=["POST"])
+@login_required
+def review(book_id):
+    """Updates reviews table in the database"""
+    # Get book information
+    the_book = db.execute("SELECT * FROM book WHERE id = :id", {"id" : book_id}).fetchall()
+ 
+    # Get book reviews information
+    review_list = db.execute("SELECT rating, book_review, book_id, username, customer_id, customer.id FROM review JOIN customer ON review.customer_id = customer.id WHERE book_id = :id", {"id" : book_id}).fetchall()
+    
+    # Get username for the customer db
+    customer_name = db.execute("SELECT username FROM customer WHERE id = :id", {"id" : session["user_id"]}).fetchone()
+    
+    # Getting Goodreads API information
+    rating_results = goodreads_review(the_book[0]["isbn"])
+    if rating_results == None:
+        total_ratings = 0
+        average_ratings = 0.0
+    else:
+        total_ratings = commaSeparator(rating_results["rate_count"])
+        average_ratings = rating_results["rate_average"]
+        
+    # Get xml data from goodreads api
+    description, cover_img = goodreads_descriptions(the_book[0]["isbn"])
     
     if request.method == "POST":
         # Readers review
@@ -233,8 +258,8 @@ def book(book_id):
         return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
     
     else:
-        return render_template("book.html", customer_name=customer_name["username"], review_list=review_list, book_id=the_book[0]["id"], the_title=the_book[0]["title"], the_author=the_book[0]["author"], the_year=the_book[0]["year"], the_isbn=the_book[0]["isbn"], total_ratings=total_ratings, average_ratings=average_ratings, cover_img=cover_img, description=description)
-  
+        return redirect("/search")
+    
     
 @app.route("/api/<string:isbn>", methods=["GET"])
 def book_api(isbn):
